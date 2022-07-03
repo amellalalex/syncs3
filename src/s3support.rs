@@ -32,10 +32,7 @@ pub async fn connect() -> Result<Bucket, Box<dyn std::error::Error>>  {
 }
 
 pub async fn upload_file(bucket: &Bucket, local_path: &str, remote_path: &str) -> S3DefaultResult {
-    #[cfg(feature = "with-tokio")]
     let mut file = tokio::fs::File::open(local_path).await?;
-   
-    #[cfg(feature = "with-async-std")]
     let code = bucket.put_object_stream(&mut file, remote_path).await?;
     
 
