@@ -1,7 +1,10 @@
 mod s3support;
+use s3support::bucket;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    s3support::connect_to_bucket().await?;
+    let bucket = bucket::connect().await?;
+    bucket::list(&bucket).await?;
+
     Ok(())
 }

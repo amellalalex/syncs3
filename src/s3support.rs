@@ -1,36 +1,54 @@
-use s3::{creds::Credentials, Bucket, Region};
 
-pub struct Session {
-    bucket: Bucket,
-}
+// pub struct Session {
+//     bucket: Bucket,
+// }
 
-pub async fn connect_to_bucket() -> Result<Session, Box<dyn std::error::Error>>  {
-    let region_name = "us-west-004".to_string();
-    let endpoint = "https://s3.us-west-004.backblazeb2.com".to_string();
-    let region = Region::Custom {
-        region: region_name,
-        endpoint,
-    };
+// impl Session {
+//     pub async fn start()
+// }
 
-    let bucket_name = "Blazemaster";
-    let credentials = Credentials::default().unwrap();
+pub mod bucket {
+    use s3::{creds::Credentials, Bucket, Region};
+   
+    type S3DefaultResult = Result<(), Box<dyn std::error::Error>>;
+    type S3BucketResult = Result<Bucket, Box<dyn std::error::Error>>;
 
-    let bucket = Bucket::new(bucket_name, region, credentials)?;
+    pub async fn connect() -> Result<Bucket, Box<dyn std::error::Error>>  {
+        let region_name = "us-west-004".to_string();
+        let endpoint = "https://s3.us-west-004.backblazeb2.com".to_string();
+        let region = Region::Custom {
+            region: region_name,
+            endpoint,
+        };
 
-    let results = bucket.list("".to_string(), None).await?;
+        let bucket_name = "Blazemaster";
+        let credentials = Credentials::default().unwrap();
 
-    for result in results.iter() {
-        for object in result.contents.iter() {
-            println!("{:?}, ", object);
-        } 
+        let bucket = Bucket::new(bucket_name, region, credentials)?;
+
+        Ok(bucket)
     }
 
-    let (data, code) = bucket.get_object("/monke.gif").await?;
+    pub async fn upload_file(local_path: &str, remote_path: &str) -> S3DefaultResult {
 
+        Ok(())
+    }
+
+    pub async fn download_file(bucket: &Bucket, remote_path: &str, local_path: &str) -> S3DefaultResult {
+        let (data, code) = bucket.get_object(remote_path).await?;
+
+        Ok(())
+    }
     
+    pub async fn list(bucket: &Bucket) -> S3DefaultResult {
+        let results = bucket.list("".to_string(), None).await?;
 
-    // println!("data = {:?}", data);
-
-    Ok(Session { bucket })
-
+        for result in results.iter() {
+            for object in result.contents.iter() {
+                println!("{:?}, ", object);
+            } 
+        }
+        Ok(())
+    } 
 }
+
